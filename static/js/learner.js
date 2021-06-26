@@ -18,6 +18,7 @@ function loadActivelyFunding() {
     fetch(`/learner_details?username=${username}`)
         .then(response => response.json())
         .then(data => {
+            data = data["CertificateList"];
             for (let i = 0; i < data.length; i++) {
                 let color = "red";
                 if (100 * data[i]["raisedAmount"]/data[i]["price"] > 80) {
