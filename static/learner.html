@@ -1,17 +1,44 @@
 <html>
-    <head>
-        <link rel="stylesheet" href="../css/styles.css">
-        <link rel="stylesheet" href="../css/index.css">
-    </head>
-    <body>
-        <div class = "container">
-            <h1>Cormenius</h1>
-            <div>
-                <h2>Learner {{.FullName}}</h2>
+
+<head>
+    <title>Learner Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/learner.css">
+
+</head>
+
+<body>
+    <div id="learner-container">
+        <div class="learner-column">
+            <div class="learner-tile tile-border">
+                <label class="learner-tile-item learner-tile-heading">Upload Certificate</label>
+                <div class="learner-tile-item file-uploader">
+                    <label id="certificate-upload-button">
+                        Choose File
+                        <input type="file" id="certificate-file-input" name="certificate-file-input">
+                    </label>
+                    <label id="certificate-file-name-label">No File Chosen</label>
+                </div>
+                <button type="submit" id="certificate-submit-button">Submit</button>
             </div>
-            <div>
-                <h2>Contributor</h2>
+            <div class="learner-tile tile-border">
+                <label class="learner-tile-item learner-tile-heading">Create New</label>
             </div>
         </div>
-    </body>
+
+        <div class="learner-column">
+            <div class="learner-tile tile-border">
+                <label class="learner-tile-item learner-tile-heading">Weekly Contributions Received</label>
+            </div>
+            <div class="learner-tile tile-border">
+                <label class="learner-tile-item learner-tile-heading">Total Contributions Received</label>
+            </div>
+            <div class="learner-tile tile-border">
+                <label class="learner-tile-item learner-tile-heading">History</label>
+            </div>
+        </div>
+    </div>
+    <script src="js/learner.js"></script>
+</body>
+
 </html>
