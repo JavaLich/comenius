@@ -28,12 +28,18 @@
     text-align: center;
     font-size: larger;
     border-right: 2px solid lightgray;
+    border-bottom: 5px solid white;
     cursor: pointer;
 }
 
 .login-selection-box:hover {
     color: #1c9ce5;
     border-bottom: 5px solid #1c9ce5;
+}
+
+.login-selection-box.selected {
+    color: #0074E1;
+    border-bottom: 5px solid #0074E1;
 }
 
 #login-inputs {

@@ -4,13 +4,14 @@
         <link rel="stylesheet" href="css/styles.css" />
         <link rel="stylesheet" href="css/index.css" />
         <link rel="stylesheet" href="css/login.css" />
+        <script src="js/login.js"></script>
     </head>
     <body>
         <div class="container">
             <div id="login-tile">
                 <div id="login-selector">
-                    <div class="login-selection-box">Learner</div>
-                    <div class="login-selection-box">Contributor</div>
+                    <div class="login-selection-box" id="learner-selector" onclick="setLoginType('Learner')">Learner</div>
+                    <div class="login-selection-box" id="contributor-selector" onclick="setLoginType('Contributor')">Contributor</div>
                 </div>
                 <div id="login-inputs">
                     <label class="input-entry"><b>Username</b></label>
