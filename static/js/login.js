@@ -48,10 +48,14 @@ function login(){
     }).then(response =>response.json())
     .then(result =>{
         console.log(result);
-        if(type == "learner")
+        if(type == "learner" && result.authenticate){
             window.location.href = `./learner/${username}`
-        else if(type == "contributor")
+            document.cookie = `user=${username}`;
+        }
+        else if(type == "contributor" && result.authenticate){
             window.location.href = `./contributor/${username}`
+            document.cookie = `user=${username}`;
+        }
     })
 }
 
