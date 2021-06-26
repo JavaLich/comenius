@@ -4,20 +4,21 @@
         <link rel="stylesheet" href="css/styles.css" />
         <link rel="stylesheet" href="css/index.css" />
         <link rel="stylesheet" href="css/login.css" />
-        <script src="js/login.js"></script>
         <!--Fonts-->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     </head>
     <body>
+        <div class = "box"></div>
         <div class="container">
             <div class="tile-border" id="login-tile">
                 <div id="login-selector">
-                    <div class="login-selection-box selected" id="learner-selector" onclick="setLoginType('Learner')">Learner</div>
-                    <div class="login-selection-box" id="contributor-selector" onclick="setLoginType('Contributor')">Contributor</div>
+                    <div class="login-selection-box selected" id="learner-selector" onclick="setLoginType('learner')">Learner</div>
+                    <div class="login-selection-box" id="contributor-selector" onclick="setLoginType('contributor')">Contributor</div>
                 </div>
                 <div id="login-inputs">
+                    <h2>Comenius</h2>
                     <label class="input-entry"><b>Username</b></label>
                     <input class="input-entry" type="text" name="username" required>
 
@@ -29,4 +30,7 @@
             </div>
         </div>
     </body>
+    <footer>
+        <script src="js/login.js"></script>
+    </footer>
 </html>
