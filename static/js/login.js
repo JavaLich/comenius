@@ -49,9 +49,9 @@ function login(){
     .then(result =>{
         console.log(result);
         if(type == "learner")
-            window.location.href = `./learners/${username}`
+            window.location.href = `./learner/${username}`
         else if(type == "contributor")
-            window.location.href = `./donators/${username}`
+            window.location.href = `./contributor/${username}`
     })
 }
 
