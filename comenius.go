@@ -4,6 +4,7 @@ import (
     "fmt"
     "log"
     "io"
+	"os"
     "net/http"
     "html/template"
     "encoding/json"
@@ -12,8 +13,8 @@ import (
 )
 
 type User struct {
-    Full_name string 
-    Login string
+	Full_name string
+	Login     string
 }
 
 type JSONRequest struct {
@@ -22,13 +23,13 @@ type JSONRequest struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    user := User {Full_name: "Akash Melachuri", Login: "akash"}
-    t, err := template.ParseFiles("static/learner.html")
-    if err != nil {
-        fmt.Println(err)
-        w.WriteHeader(http.StatusInternalServerError)
-    }
-    t.Execute(w, user)
+	user := User{Full_name: "Akash Melachuri", Login: "akash"}
+	t, err := template.ParseFiles("static/learner.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	t.Execute(w, user)
 }
 
 func post(w http.ResponseWriter, r *http.Request) {
@@ -47,11 +48,14 @@ func post(w http.ResponseWriter, r *http.Request) {
     w.WriteHeader(http.StatusCreated)
     w.Write([]byte(`{"authenticate": true}`))
 }
- 
+
 func main() {
-    r := mux.NewRouter()
-    r.HandleFunc("/users/", handler).Methods(http.MethodGet)
-    r.HandleFunc("/login", post).Methods(http.MethodPost)
-    r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
-    log.Fatal(http.ListenAndServe(":8080", r))
+	port := os.Getenv("PORT")
+	// port = "8080" // uncomment for local testing
+	r := mux.NewRouter()
+	r.HandleFunc("/users/", handler).Methods(http.MethodGet)
+	r.HandleFunc("/login", post).Methods(http.MethodPost)
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
+	log.Print("Listening on :" + port)
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }
