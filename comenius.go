@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"os"
 
-	"cloud.google.com/go/firestore"
     "google.golang.org/api/option"
     "google.golang.org/api/iterator"
 	"firebase.google.com/go"
@@ -41,8 +40,9 @@ type Contributor struct {
 }
 
 type LoginRequest struct {
-	User string
-	Pass string
+    User string `json:"username"`
+    Pass string `json:"password"`
+    Type string `json:"type"`
 }
 
 type CertificateRequest struct {
@@ -95,11 +95,32 @@ func loginPost(w http.ResponseWriter, r *http.Request) {
 	var request LoginRequest
 	json.Unmarshal(buffer, &request)
 
-	// Figure out user data from postgres
+    username := request.User
+    
+    iter := client.Collection(request.Type).Documents(context.Background())
+
+    for {
+        doc, err := iter.Next()
+
+        if err == iterator.Done {
+            break
+        }
+
+        if err != nil {
+            fmt.Fprintf(w, "Error %v", err)
+        }
+
+        if username == doc.Data()["username"].(string) {
+	        w.Header().Set("Content-Type", "application/json")
+	        w.WriteHeader(http.StatusCreated)
+	        w.Write([]byte(`{"authenticate": true}`))
+            return
+        }
+    }
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(`{"authenticate": true}`))
+	w.Write([]byte(`{"authenticate": false}`))
 }
 
 func loginGet(w http.ResponseWriter, r *http.Request) {
@@ -129,8 +150,6 @@ func donate(w http.ResponseWriter, r *http.Request) {
 	var request DonateRequest
 	json.Unmarshal(buffer, &request)
 
-	// Figure out user data from postgres
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"submitted": true}`))
@@ -139,21 +158,6 @@ func donate(w http.ResponseWriter, r *http.Request) {
 // func queryLearner(user string) *Learner {
 //  
 // } 
-
-func test(client *firestore.Client) {
-	result, err := client.Collection("sampleData").Doc("inspiration").Set(context.Background(), map[string]int{"test": 5})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	doc := client.Doc("contribution/0rq0QKmbb8IBrOCGBnwd")
-	docsnap, _ := doc.Get(context.Background())
-	dataMap := docsnap.Data()
-	fmt.Println(dataMap)
-
-	fmt.Println(result)
-}
 
 func getCertificates(w http.ResponseWriter, r *http.Request) {
     var Certs []Certificate
@@ -183,7 +187,6 @@ func getCertificates(w http.ResponseWriter, r *http.Request) {
         course_doc := client.Doc(dataMap["courseID"].(string))
         coursedocsnap, _ := course_doc.Get(context.Background())
         courseDataMap := coursedocsnap.Data()
-        //fmt.Println(courseDataMap["url"].(string))
 
         Cert := Certificate {
             CertificateURL: dataMap["certificateURL"].(string), 
@@ -205,8 +208,6 @@ func getCertificates(w http.ResponseWriter, r *http.Request) {
 } 
 
 func main() {
-	// test(client)
-
 	port := os.Getenv("PORT")
 	port = "8080" // uncomment for local testing
 	r := mux.NewRouter()
