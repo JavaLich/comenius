@@ -15,7 +15,7 @@ document.getElementById("certificate-file-input").addEventListener('change', (ev
 function loadActivelyFunding() {
     var url_string = window.location.href;
     let username = url_string.split("/").pop()
-    fetch(`http://localhost:8080/learner_details?username=${username}`)
+    fetch(`/learner_details?username=${username}`)
         .then(response => response.json())
         .then(data => {
             for (let i = 0; i < data.length; i++) {
