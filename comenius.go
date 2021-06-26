@@ -3,14 +3,22 @@ package main
 import (
     "fmt"
     "log"
+    "io"
     "net/http"
-    "github.com/gorilla/mux"
     "html/template"
+    "encoding/json"
+
+    "github.com/gorilla/mux"
 )
 
 type User struct {
     Full_name string 
     Login string
+}
+
+type JSONRequest struct {
+    User string
+    Pass string
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
@@ -24,15 +32,26 @@ func handler(w http.ResponseWriter, r *http.Request) {
 }
 
 func post(w http.ResponseWriter, r *http.Request) {
+    body := r.Body
+    buffer, err := io.ReadAll(body)
+
+    if err != nil {
+        fmt.Println("Request read error:")
+        fmt.Println(err)
+    }
+
+    var request JSONRequest
+    json.Unmarshal(buffer, &request)
+
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
-    w.Write([]byte(`{"message": "post called"}`))
+    w.Write([]byte(`{"authenticate": true}`))
 }
  
 func main() {
     r := mux.NewRouter()
-    r.HandleFunc("/users/", handler)
-    r.HandleFunc("/users/", post).Methods(http.MethodPost)
+    r.HandleFunc("/users/", handler).Methods(http.MethodGet)
+    r.HandleFunc("/login", post).Methods(http.MethodPost)
     r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
     log.Fatal(http.ListenAndServe(":8080", r))
 }
