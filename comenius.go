@@ -64,7 +64,7 @@ func donator(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, user)
 }
 
-func login(w http.ResponseWriter, r *http.Request) {
+func loginPost(w http.ResponseWriter, r *http.Request) {
     body := r.Body
     buffer, err := io.ReadAll(body)
 
@@ -83,7 +83,7 @@ func login(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte(`{"authenticate": true}`))
 }
 
-func loginPage(w http.ResponseWriter, r *http.Request) {
+func loginGet(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("static/login.html")
 	if err != nil {
 		fmt.Println(err)
@@ -151,10 +151,8 @@ func main() {
 	port := os.Getenv("PORT")
 	port = "8080" // uncomment for local testing
 	r := mux.NewRouter()
-	//r.HandleFunc("/learners/", learner).Methods(http.MethodGet)
-    r.HandleFunc("/donators/", donator).Methods(http.MethodGet)
-	r.HandleFunc("/login", login).Methods(http.MethodPost)
-	r.HandleFunc("/login", loginPage).Methods(http.MethodGet)
+	r.HandleFunc("/login", loginPost).Methods(http.MethodPost)
+	r.HandleFunc("/login", loginGet).Methods(http.MethodGet)
 	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
 	r.HandleFunc("/donate", donate).Methods(http.MethodPost)
 	r.PathPrefix("/learners").HandlerFunc(learner).Methods(http.MethodGet)
