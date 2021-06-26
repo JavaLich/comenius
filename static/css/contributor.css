@@ -1,6 +1,10 @@
 .container{
-    height: 98vh;
-    width: 98%;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 h2{
@@ -28,8 +32,8 @@ h2{
 
 .tile{
     background-color: white;
-    width: 80%;
-    margin: 5%;
+    width: 90%;
+    margin: 2%;
     padding: 5%;
     border-radius: 5px;
     display: flex;
@@ -50,7 +54,7 @@ h2{
 input, select{
     margin: 1%;
     outline:none;
-    border:0;
+    border: 1px solid;
     border-radius: 3%;
 }
 input[type=text]{
@@ -76,4 +80,19 @@ select{
 #amount-raised{
     font-size: 3em;
     padding: 5%;
+}
+
+#impact-table, #payment-table, #leaderboard{
+    margin:5%;
+}
+
+#money{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#donate div select{
+    width: 40%;
 }
