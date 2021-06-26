@@ -51,7 +51,7 @@ function login(){
         if(type == "learner")
             window.location.href = `./learner/${username}`
         else if(type == "contributor")
-            window.location.href = `./donator/${username}`
+            window.location.href = `./contributor/${username}`
     })
 }
 
