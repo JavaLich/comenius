@@ -1,7 +1,7 @@
 <html>
     <head>
-        <link rel="stylesheet" href="css/styles.css">
-        <link rel="stylesheet" href="css/contributor.css">
+        <link rel="stylesheet" href="../css/styles.css">
+        <link rel="stylesheet" href="../css/contributor.css">
         <!--Fonts-->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,8 +13,34 @@
                 <div class = "hsplit">
                     <div class = "tile">
                         <h2>Donate</h2>
+                        <div>
+                        <label>Select bank</label>
+                            <select>
+                                <option>Chase (#5666)</option>
+                                <option>Bank of America (#4488)</option>
+                            </select>
+                        </div>
+                        <div id = "donation-box">
+                            <input type = "text" placeholder = "Enter amount"/>
+                            <input type = "submit">
+                        </div>
                     </div>
-                    <div class = "tile">
+                    <div class = "tile" id = "payment-table">
+                        <table>
+                            <tr>
+                              <th>Date</th>
+                              <th>Payment</th>
+                              
+                            </tr>
+                            <tr>
+                              <td>12/20/2020</td>
+                              <td>1000.00</td>
+                            </tr>
+                            <tr>
+                              <td>1/20/2021</td>
+                              <td>1500.00</td>
+                            </tr>
+                        </table>
                     </div>
                     <div class = "tile"></div>
                 </div>
@@ -23,8 +49,25 @@
                     </div>
                     <div class = "vsplit">
                         <div class = "tile">
+                            <h2>Total Money Raised</h2>
+                            <h3 id = "amount-raised">$2000.00</h3>
                         </div>
                         <div class = "tile">
+                            <table>
+                                <tr>
+                                  <th>User</th>
+                                  <th>Amount</th>
+                                  
+                                </tr>
+                                <tr>
+                                  <td>Riley</td>
+                                  <td>500.00</td>
+                                </tr>
+                                <tr>
+                                  <td>Kevin</td>
+                                  <td>1500.00</td>
+                                </tr>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -32,6 +75,6 @@
         </div>
     </body>
     <footer>
-        <script src = "./js/learner.js"></script>
+    <!-- <script src = "../js/learner.js"></script> -->
     </footer>
 </html>
