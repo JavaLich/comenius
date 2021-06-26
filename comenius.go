@@ -83,6 +83,15 @@ func login(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte(`{"authenticate": true}`))
 }
 
+func loginPage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("static/login.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	t.Execute(w, nil)
+}
+
 func certificate(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
@@ -145,6 +154,7 @@ func main() {
 	//r.HandleFunc("/learners/", learner).Methods(http.MethodGet)
     r.HandleFunc("/donators/", donator).Methods(http.MethodGet)
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
+	r.HandleFunc("/login", loginPage).Methods(http.MethodGet)
 	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
 	r.HandleFunc("/donate", donate).Methods(http.MethodPost)
 	r.PathPrefix("/learners").HandlerFunc(learner).Methods(http.MethodGet)
