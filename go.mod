@@ -8,5 +8,5 @@ require (
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/gorilla/mux v1.8.0
 	golang.org/x/oauth2 v0.0.0-20210622215436-a8dc77f794b6 // indirect
-	google.golang.org/api v0.49.0
+	google.golang.org/api v0.49.0 // indirect
 )
