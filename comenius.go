@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "log"
+    "context"
     "io"
 	"os"
     "net/http"
@@ -10,13 +11,13 @@ import (
     "encoding/json"
 
     "github.com/gorilla/mux"
-)
+    "firebase.google.com/go"
+    "cloud.google.com/go/firestore"
+    "google.golang.org/api/option"
+)  
 
-const uploadPath = "./tmp"
-const maxFileSize = 4 * 1024 * 1024
-
-type Learner struct {
-	FullName string
+type Learner struct { 
+    FullName string
 	Login     string
 }
 
@@ -38,7 +39,11 @@ type DonateRequest struct {
     User string
     amount float32
 }
-
+type Contribution struct {
+    amount float32
+    certificateID string
+    date string
+}
 func learner(w http.ResponseWriter, r *http.Request) {
 	user := Learner{FullName: "Akash Melachuri", Login: "akash"}
 	t, err := template.ParseFiles("static/learner.html")
@@ -78,6 +83,15 @@ func login(w http.ResponseWriter, r *http.Request) {
     w.Write([]byte(`{"authenticate": true}`))
 }
 
+func loginPage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("static/login.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	t.Execute(w, nil)
+}
+
 func certificate(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
@@ -97,17 +111,54 @@ func donate(w http.ResponseWriter, r *http.Request) {
     json.Unmarshal(buffer, &request)
 
     // Figure out user data from postgres
+
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+    w.Write([]byte(`{"submitted": true}`))
+}
+
+func test(client *firestore.Client) {
+    result, err := client.Collection("sampleData").Doc("inspiration").Set(context.Background(), map[string]int {"test": 5})
+    
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    doc := client.Doc("contribution/0rq0QKmbb8IBrOCGBnwd")
+    docsnap, _ := doc.Get(context.Background())
+
+    dataMap := docsnap.Data()
+    fmt.Println(dataMap)
+    
+    fmt.Println(result)
 }
 
 func main() {
+    opt := option.WithCredentialsFile("./serviceAccountKey.json")
+    app, err := firebase.NewApp(context.Background(), nil, opt)
+
+    if err != nil {
+        log.Fatalf("error initializing app: %v", err)
+    }
+
+    client, err := app.Firestore(context.Background())
+    if err != nil {
+		log.Fatalf("app.Firestore: %v", err)
+    }
+
+    test(client)
+
 	port := os.Getenv("PORT")
 	port = "8080" // uncomment for local testing
 	r := mux.NewRouter()
-	r.HandleFunc("/learners/", learner).Methods(http.MethodGet)
+	//r.HandleFunc("/learners/", learner).Methods(http.MethodGet)
     r.HandleFunc("/donators/", donator).Methods(http.MethodGet)
 	r.HandleFunc("/login", login).Methods(http.MethodPost)
+	r.HandleFunc("/login", loginPage).Methods(http.MethodGet)
 	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
 	r.HandleFunc("/donate", donate).Methods(http.MethodPost)
+	r.PathPrefix("/learners").HandlerFunc(learner).Methods(http.MethodGet)
+    r.PathPrefix("/donators").HandlerFunc(donator).Methods(http.MethodGet)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	log.Print("Listening on :" + port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
