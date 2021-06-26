@@ -1,5 +1,6 @@
 *{
     overflow:hidden;
+    margin:0;
 }
 
 .container{
@@ -9,4 +10,24 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
+}
+
+.header{
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.options{
+    height: 80vh;
+    width: 100%;
+    flex-direction: row;
+    display: flex;
+    justify-content: space-around;
+    margin-top: 10%;
+    margin-left: 10%;
+    margin-right: 10%;
 }
