@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+    "time"
 	"html/template"
 	"io"
 	"log"
@@ -11,8 +12,23 @@ import (
 	"os"
 
 	"cloud.google.com/go/firestore"
+    "google.golang.org/api/option"
+    "google.golang.org/api/iterator"
+	"firebase.google.com/go"
 	"github.com/gorilla/mux"
 )
+
+type Certificate struct {
+    CertificateURL string   `json:"certificateURL"`
+    CourseImageURL string   `json:"courseImageURL"`
+    Name string             `json:"name"`
+    Platform string         `json:"platform"`
+    Price int64             `json:"price"`
+    URL string              `json:"url"`
+    Date time.Time          `json:"date"`
+    FullyFunded bool        `json:"fullyFunded"`
+    RaisedAmount int64      `json:"raisedAmount"`
+}
 
 type Learner struct {
 	FullName string
@@ -42,6 +58,10 @@ type Contribution struct {
 	certificateID string
 	date          string
 }
+
+var opt = option.WithCredentialsFile("./serviceAccountKey.json")
+var app, _ = firebase.NewApp(context.Background(), nil, opt)
+var client, _ = app.Firestore(context.Background())
 
 func learner(w http.ResponseWriter, r *http.Request) {
     user := Learner{FullName: r.URL.Path[len("/learner/"):], Login: r.URL.Path[1:]}
@@ -116,6 +136,10 @@ func donate(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"submitted": true}`))
 }
 
+// func queryLearner(user string) *Learner {
+//  
+// } 
+
 func test(client *firestore.Client) {
 	result, err := client.Collection("sampleData").Doc("inspiration").Set(context.Background(), map[string]int{"test": 5})
 
@@ -125,32 +149,69 @@ func test(client *firestore.Client) {
 
 	doc := client.Doc("contribution/0rq0QKmbb8IBrOCGBnwd")
 	docsnap, _ := doc.Get(context.Background())
-
 	dataMap := docsnap.Data()
 	fmt.Println(dataMap)
 
 	fmt.Println(result)
 }
 
+func getCertificates(w http.ResponseWriter, r *http.Request) {
+    var Certs []Certificate
+
+    username := r.URL.Query().Get("username")
+    iter := client.Collection("learner").Documents(context.Background())
+
+    var certList []interface{}
+    for {
+        doc, err := iter.Next()
+        if err == iterator.Done {
+            break
+        }
+        if err != nil {
+            fmt.Fprintf(w, "Error %v", err)
+        }
+        if username == doc.Data()["username"] {
+            certList = doc.Data()["certificateList"].([]interface{})
+            break
+        }
+    }
+
+    for _, s := range certList {
+	    learner_doc := client.Doc(s.(string))
+	    docsnap, _ := learner_doc.Get(context.Background())
+	    dataMap := docsnap.Data()
+        course_doc := client.Doc(dataMap["courseID"].(string))
+        coursedocsnap, _ := course_doc.Get(context.Background())
+        courseDataMap := coursedocsnap.Data()
+        //fmt.Println(courseDataMap["url"].(string))
+
+        Cert := Certificate {
+            CertificateURL: dataMap["certificateURL"].(string), 
+            CourseImageURL: courseDataMap["courseImageURL"].(string),
+            Name: courseDataMap["name"].(string),
+            Platform: courseDataMap["platform"].(string),
+            Price: courseDataMap["price"].(int64),
+            URL: courseDataMap["url"].(string),
+            Date: dataMap["date"].(time.Time),
+            FullyFunded: dataMap["fullyFunded"].(bool),
+            RaisedAmount: dataMap["raisedAmount"].(int64),
+        }
+        Certs = append(Certs, Cert)
+    }
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+    json.NewEncoder(w).Encode(Certs)
+} 
+
 func main() {
-	// opt := option.WithCredentialsFile("./serviceAccountKey.json")
-	// app, err := firebase.NewApp(context.Background(), nil, opt)
-
-	// if err != nil {
-	//     log.Fatalf("error initializing app: %v", err)
-	// }
-
-	// client, err := app.Firestore(context.Background())
-	// if err != nil {
-	// 	log.Fatalf("app.Firestore: %v", err)
-	// }
-
 	// test(client)
 
 	port := os.Getenv("PORT")
 	port = "8080" // uncomment for local testing
 	r := mux.NewRouter()
-	r.HandleFunc("/login", loginPost).Methods(http.MethodPost)
+	r.HandleFunc("/learner_details", getCertificates).Methods(http.MethodGet)
+    r.HandleFunc("/login", loginPost).Methods(http.MethodPost)
 	r.HandleFunc("/login", loginGet).Methods(http.MethodGet)
 	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
 	r.HandleFunc("/donate", donate).Methods(http.MethodPost)
