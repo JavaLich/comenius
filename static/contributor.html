@@ -18,21 +18,21 @@
                         <h2>Donate</h2>
                         <div>
                             <label>Select bank:</label>
-                            <select>
+                            <select id = "bank-select">
                                 <option>Chase (#5666)</option>
                                 <option>Bank of America (#4488)</option>
                             </select>
                         </div>
                         <div>
                             <label>Choose a donation:</label>
-                            <select>
+                            <select id = "cert-select">
                                 <option>Riley - 200$</option>
                                 <option>Marley - 400$</option>
                             </select>
                         </div>
                         <div id = "donation-box">
-                            <input type = "text" placeholder = "Enter amount"/>
-                            <input type = "submit">
+                            <input id = "amount" type = "text" placeholder = "Enter amount"/>
+                            <input type = "submit" onclick = "donate()">
                         </div>
                     </div>
                     <div class = "tile" >
@@ -117,6 +117,6 @@
         </div>
     </body>
     <footer>
-    <!-- <script src = "../js/learner.js"></script> -->
+    <script src = "../js/contributor.js"></script>
     </footer>
 </html>
