@@ -26,8 +26,8 @@ function login(){
     var url_string = window.location.href;
     var cur_url = new URL(url_string);
     var type = cur_url.searchParams.get("type");
-    let username = document.getElementById("username");
-    let password = document.getElementById("password");
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
     let url = "./login"
     data = {
         "username": username,
@@ -46,7 +46,13 @@ function login(){
         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
         body: JSON.stringify(data) // body data type must match "Content-Type" header
     }).then(response =>response.json())
-    .then(result =>console.log(result))
+    .then(result =>{
+        console.log(result);
+        if(type == "learner")
+            window.location.href = `./learners/${username}`
+        else if(type == "contributor")
+            window.location.href = `./donators/${username}`
+    })
 }
 
 initialize();
