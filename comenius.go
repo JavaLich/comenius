@@ -1,10 +1,11 @@
 package main
 
 import (
-	"io"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"text/template"
 )
 
 // type User struct {
@@ -41,13 +42,13 @@ import (
 
 func handle(w http.ResponseWriter, r *http.Request) {
 
-	// t, err := template.ParseFiles("./static/index.html")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// }
-	// t.Execute(w, nil)
-	io.WriteString(w, "Hello World")
+	t, err := template.ParseFiles("./static/index.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	t.Execute(w, nil)
+	// io.WriteString(w, "Hello World")
 }
 
 func main() {
