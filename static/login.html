@@ -2,17 +2,26 @@
     <head>
         <title>Login</title>
         <link rel="stylesheet" href="css/styles.css" />
+        <link rel="stylesheet" href="css/index.css" />
         <link rel="stylesheet" href="css/login.css" />
     </head>
     <body>
-        <div class="tile" id="login-tile">
-            <label>Username</label>
-            <input type="text" placeholder="Enter Username" name="username" required>
+        <div class="container">
+            <div id="login-tile">
+                <div id="login-selector">
+                    <div class="login-selection-box">Learner</div>
+                    <div class="login-selection-box">Contributor</div>
+                </div>
+                <div id="login-inputs">
+                    <label class="input-entry"><b>Username</b></label>
+                    <input class="input-entry" type="text" name="username" required>
 
-            <label>Password</label>
-            <input type="password" placeholder="Enter Password" name="password" required>
+                    <label class="input-entry"><b>Password</b></label>
+                    <input class="input-entry" type="password" name="password" required>
 
-            <button type="submit">Login</button>
+                    <button class="input-entry" type="submit">Login</button>
+                </div>
+            </div>
         </div>
     </body>
 </html>

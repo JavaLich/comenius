@@ -1,0 +1,85 @@
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#login-tile {
+    border-radius: 10px;
+    min-width: 60vh;
+    -webkit-box-shadow: 2px 2px 3px 4px #ccc;  /* Safari 3-4, iOS 4.0.2 - 4.2, Android 2.3+ */
+    -moz-box-shadow:    2px 2px 3px 4px #ccc;  /* Firefox 3.5 - 3.6 */
+    box-shadow:         2px 2px 3px 4px #ccc;
+}
+
+#login-selector {
+    display: flex;
+    flex-direction: row;
+}
+
+.login-selection-box {
+    width: 50%;
+    padding: 5%;
+    margin: 5% 0 5% 0;
+    text-align: center;
+    font-size: larger;
+    border-right: 2px solid lightgray;
+    cursor: pointer;
+}
+
+.login-selection-box:hover {
+    color: #1c9ce5;
+    border-bottom: 5px solid #1c9ce5;
+}
+
+#login-inputs {
+    padding: 10%;
+}
+
+.input-entry {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5%;
+}
+
+input.input-entry {
+    margin: 5px 0 20px 0;
+    padding: 10px;
+    border: 0;
+    height: 40px;
+    width: 100%;
+    color: var(--text_grey);
+    background: none;
+    outline: none;
+    background-color: #fcfcfc;
+    border: 1px solid #bdbdbd;
+    border-radius: 5px;
+    border-spacing: 10px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 1.1em;
+    transition: all 0.5s;
+}
+
+label.input-entry {
+    text-align: left;
+}
+
+button.input-entry {
+    font-size: large;
+    color: white;
+    border-radius: 5px;
+    margin: 0 auto 0 auto;
+    padding: 5% 15% 5% 15%;
+    background-color: #1c9ce5;
+    border: none;
+    cursor: pointer;
+}
+
+button.input-entry:hover {
+    background-color: #0074E1;
+}
