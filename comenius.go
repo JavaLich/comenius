@@ -2,11 +2,12 @@ package main
 
 import (
 	"fmt"
-	"github.com/gorilla/mux"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
 type User struct {
@@ -32,11 +33,12 @@ func post(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	port := os.Getenv("PORT")
+	// port = "8080" // uncomment for local testing
 	r := mux.NewRouter()
-	r.HandleFunc("/users/", handler)
+	r.HandleFunc("/users/", handler).Methods(http.MethodGet)
 	r.HandleFunc("/users/", post).Methods(http.MethodPost)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	log.Print("Listening on :" + port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 
 }
