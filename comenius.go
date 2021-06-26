@@ -45,7 +45,7 @@ type Contribution struct {
     date string
 }
 func learner(w http.ResponseWriter, r *http.Request) {
-	user := Learner{FullName: "Akash Melachuri", Login: "akash"}
+    user := Learner{FullName: r.URL.Path[len("/learner/"):], Login: r.URL.Path[1:]}
 	t, err := template.ParseFiles("static/learner.html")
 	if err != nil {
 		fmt.Println(err)
@@ -155,7 +155,7 @@ func main() {
 	r.HandleFunc("/login", loginGet).Methods(http.MethodGet)
 	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
 	r.HandleFunc("/donate", donate).Methods(http.MethodPost)
-	r.PathPrefix("/learners").HandlerFunc(learner).Methods(http.MethodGet)
+	r.PathPrefix("/learner").HandlerFunc(learner).Methods(http.MethodGet)
     r.PathPrefix("/donators").HandlerFunc(donator).Methods(http.MethodGet)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	log.Print("Listening on :" + port)
