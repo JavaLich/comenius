@@ -1,3 +1,8 @@
+#outer-container{
+    display:flex;
+    flex-direction: column;
+}
+
 #learner-container {
     display: flex;
     flex-direction: row;
