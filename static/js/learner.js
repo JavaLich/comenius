@@ -14,8 +14,7 @@ document.getElementById("certificate-file-input").addEventListener('change', (ev
 // Actively Funding
 function loadActivelyFunding() {
     var url_string = window.location.href;
-    var cur_url = new URL(url_string);
-    var username = cur_url.searchParams.get("username");
+    let username = url_string.split("/").pop()
     fetch(`http://localhost:8080/learner_details?username=${username}`)
         .then(response => response.json())
         .then(data => {
