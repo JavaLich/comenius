@@ -14,7 +14,8 @@
 }
 
 .header{
-    height: 20vh;
+    position: relative;
+    height: 30vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -22,12 +23,23 @@
 }
 
 .options{
-    height: 80vh;
-    width: 100%;
+    position: relative;
+    width: 80%;
+    height: 70vh;
     flex-direction: row;
     display: flex;
     justify-content: space-around;
+    align-items: flex-start;
     margin-top: 10%;
-    margin-left: 10%;
-    margin-right: 10%;
+}
+
+.option{
+    width: 30%;
+    height: 30vh;
+    border: solid 2px red;
+    background-color: antiquewhite;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
