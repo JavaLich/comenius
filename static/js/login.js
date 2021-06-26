@@ -50,11 +50,11 @@ function login(){
         console.log(result);
         if(type == "learner" && result.authenticate){
             window.location.href = `./learner/${username}`
-            document.cookie = `user=${username}`;
+            document.cookie = `user=${username};`;
         }
         else if(type == "contributor" && result.authenticate){
             window.location.href = `./contributor/${username}`
-            document.cookie = `user=${username}`;
+            document.cookie = `user=${username};`;
         }
     })
 }
