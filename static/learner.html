@@ -16,13 +16,15 @@
 <body>
     <div class = "outer-container">
         <div class = "menu">
-            <h1>Comenius - Welcome {{ .FullName }}</h1>
+            <h1>Comenius</h1>
         </div>
     
         <div id="learner-container">
             <div class="learner-column">
                 <div class="learner-tile tile-border">
                     <h2 class="learner-tile-item learner-tile-heading">Upload Certificate</h2>
+                    
+                    <input type="text" placeholder="course url" id ="course-url"/>
                     <div class="learner-tile-item file-uploader">
                         <label id="certificate-upload-button">
                             Choose File
@@ -30,7 +32,7 @@
                         </label>
                         <label id="certificate-file-name-label">No File Chosen</label>
                     </div>
-                    <button type="submit" id="certificate-submit-button">Submit</button>
+                    <button type="submit" id="certificate-submit-button" onclick = "uploadCert()">Submit</button>
                 </div>
                 <div class="learner-tile tile-border">
                     <h2 class="learner-tile-item learner-tile-heading">Actively Funding</h2>
