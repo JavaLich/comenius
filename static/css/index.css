@@ -1,7 +1,4 @@
-*{
-    overflow:hidden;
-    margin:0;
-}
+
 
 .container{
     width: 100%;
@@ -42,4 +39,5 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    cursor: pointer;
 }

@@ -1,7 +1,7 @@
 <html>
     <head>
         <link rel="stylesheet" href="css/styles.css">
-
+        <link rel="stylesheet" href="css/index.css">
         <!--Fonts-->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,13 +13,16 @@
                 <h1>Comenius</h1>
             </div>
             <div class = "options">
-                <div class = "option">
+                <div onclick = "login('learner')" class = "option">
                     <h2>Learner</h2>
                 </div>
-                <div class = "option">
+                <div onclick = "login('contributor')" class = "option">
                     <h2>Contributor</h2>
                 </div>
             </div>
         </div>
     </body>
+    <footer>
+        <script src = "./js/index.js"></script>
+    </footer>
 </html>
