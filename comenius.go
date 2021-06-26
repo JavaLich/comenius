@@ -51,7 +51,7 @@ func learner(w http.ResponseWriter, r *http.Request) {
 
 func donator(w http.ResponseWriter, r *http.Request) {
 	user := Donator{FullName: "Akash Melachuri", Login: "akash"}
-	t, err := template.ParseFiles("static/contributors.html")
+	t, err := template.ParseFiles("static/contributor.html")
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
