@@ -12,18 +12,35 @@ import (
     "github.com/gorilla/mux"
 )
 
-type User struct {
-	Full_name string
+const uploadPath = "./tmp"
+const maxFileSize = 4 * 1024 * 1024
+
+type Learner struct {
+	FullName string
 	Login     string
 }
 
-type JSONRequest struct {
+type Donator struct {
+	FullName string
+	Login     string
+}
+
+type LoginRequest struct {
     User string
     Pass string
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	user := User{Full_name: "Akash Melachuri", Login: "akash"}
+type CertificateRequest struct {
+    User string
+}
+
+type DonateRequest struct {
+    User string
+    amount float32
+}
+
+func learner(w http.ResponseWriter, r *http.Request) {
+	user := Learner{FullName: "Akash Melachuri", Login: "akash"}
 	t, err := template.ParseFiles("static/learner.html")
 	if err != nil {
 		fmt.Println(err)
@@ -32,7 +49,17 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	t.Execute(w, user)
 }
 
-func post(w http.ResponseWriter, r *http.Request) {
+func donator(w http.ResponseWriter, r *http.Request) {
+	user := Donator{FullName: "Akash Melachuri", Login: "akash"}
+	t, err := template.ParseFiles("static/contributors.html")
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	t.Execute(w, user)
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
     body := r.Body
     buffer, err := io.ReadAll(body)
 
@@ -41,20 +68,46 @@ func post(w http.ResponseWriter, r *http.Request) {
         fmt.Println(err)
     }
 
-    var request JSONRequest
+    var request LoginRequest
     json.Unmarshal(buffer, &request)
+
+    // Figure out user data from postgres
 
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
     w.Write([]byte(`{"authenticate": true}`))
 }
 
+func certificate(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+    w.Write([]byte(`{"submitted": true}`))
+}
+
+func donate(w http.ResponseWriter, r *http.Request) {
+    body := r.Body
+    buffer, err := io.ReadAll(body)
+
+    if err != nil {
+        fmt.Println("Request read error:")
+        fmt.Println(err)
+    }
+
+    var request DonateRequest
+    json.Unmarshal(buffer, &request)
+
+    // Figure out user data from postgres
+}
+
 func main() {
 	port := os.Getenv("PORT")
-	// port = "8080" // uncomment for local testing
+	port = "8080" // uncomment for local testing
 	r := mux.NewRouter()
-	r.HandleFunc("/users/", handler).Methods(http.MethodGet)
-	r.HandleFunc("/login", post).Methods(http.MethodPost)
+	r.HandleFunc("/learners/", learner).Methods(http.MethodGet)
+    r.HandleFunc("/donators/", donator).Methods(http.MethodGet)
+	r.HandleFunc("/login", login).Methods(http.MethodPost)
+	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
+	r.HandleFunc("/donate", donate).Methods(http.MethodPost)
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	log.Print("Listening on :" + port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
