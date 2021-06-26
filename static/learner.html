@@ -5,13 +5,14 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/learner.css">
 
+    <script src="js/chart.min.js"></script>
 </head>
 
 <body>
     <div id="learner-container">
         <div class="learner-column">
             <div class="learner-tile tile-border">
-                <label class="learner-tile-item learner-tile-heading">Upload Certificate</label>
+                <label class="learner-tile-item learner-tile-heading">Active Courses</label>
                 <div class="learner-tile-item file-uploader">
                     <label id="certificate-upload-button">
                         Choose File
@@ -22,19 +23,20 @@
                 <button type="submit" id="certificate-submit-button">Submit</button>
             </div>
             <div class="learner-tile tile-border">
-                <label class="learner-tile-item learner-tile-heading">Create New</label>
+                <label class="learner-tile-item learner-tile-heading">History</label>
             </div>
         </div>
 
         <div class="learner-column">
             <div class="learner-tile tile-border">
-                <label class="learner-tile-item learner-tile-heading">Weekly Contributions Received</label>
+                <label class="learner-tile-item learner-tile-heading">Create New</label>
             </div>
             <div class="learner-tile tile-border">
                 <label class="learner-tile-item learner-tile-heading">Total Contributions Received</label>
             </div>
             <div class="learner-tile tile-border">
-                <label class="learner-tile-item learner-tile-heading">History</label>
+                <label class="learner-tile-item learner-tile-heading">Weekly Contributions Received</label>
+                <canvas id="myChart" width="400" height="400"></canvas>
             </div>
         </div>
     </div>
