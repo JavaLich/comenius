@@ -9,15 +9,25 @@
     </head>
     <body>
         <div class = "container">
+            <div class = "menu">
+                <h1>Comenius</h1>
+            </div>
             <div class = "vsplit">
                 <div class = "hsplit">
-                    <div class = "tile">
+                    <div class = "tile" id = "donate">
                         <h2>Donate</h2>
                         <div>
-                        <label>Select bank</label>
+                            <label>Select bank:</label>
                             <select>
                                 <option>Chase (#5666)</option>
                                 <option>Bank of America (#4488)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Choose a donation:</label>
+                            <select>
+                                <option>Riley - 200$</option>
+                                <option>Marley - 400$</option>
                             </select>
                         </div>
                         <div id = "donation-box">
@@ -25,8 +35,9 @@
                             <input type = "submit">
                         </div>
                     </div>
-                    <div class = "tile" id = "payment-table">
-                        <table>
+                    <div class = "tile" >
+                        <h2> Donation History </h2>
+                        <table id = "payment-table">
                             <tr>
                               <th>Date</th>
                               <th>Payment</th>
@@ -42,10 +53,40 @@
                             </tr>
                         </table>
                     </div>
-                    <div class = "tile"></div>
+                    <div class = "tile">
+                        <h2> Leaderboard </h2>
+                        <table id = "leaderboard">
+                            <tr>
+                              <th>Rank</th>
+                              <th>Name</th>
+                              <th>Payment</th>
+                            </tr>
+                            <tr>
+                              <th>1</th>
+                              <th>Craig</th>
+                              <th>4000.00$</th>
+                            </tr>
+                            <tr>
+                              <th>2</th>
+                              <th>Madison</th>
+                              <th>3780.00$</th>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
                 <div class = "hsplit"> 
+                    <div class = "tile" id = "money">
+                        <h2>Bank Accounts</h2>
+                        <input type = "text" placeholder = "Enter routing number"/>
+                        <input type = "text" placeholder = "Account number"/>
+                        <div id = "bank-acct">
+                            <input type = "text" placeholder = "Enter bank"/>
+                            <input type = "submit">
+                        </div>
+                    </div>
                     <div class = "tile">
+                        <h2>Total Impact</h2>
+                        <h3 id = "amount-raised">2 people</h3>
                     </div>
                     <div class = "vsplit">
                         <div class = "tile">
@@ -53,7 +94,8 @@
                             <h3 id = "amount-raised">$2000.00</h3>
                         </div>
                         <div class = "tile">
-                            <table>
+                            <h2>People Impacted</h2>
+                            <table id = "impact-table">
                                 <tr>
                                   <th>User</th>
                                   <th>Amount</th>
