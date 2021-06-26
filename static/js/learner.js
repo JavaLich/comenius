@@ -60,3 +60,16 @@ var myChart = new Chart(ctx, {
         }
     }
 });
+
+function uploadCert(){
+    let course_url = document.getElementById("course-url").value;
+    let fileElement = document.getElementById("certificate-file-input");
+    let formData = new FormData();
+    formData.append("certificate_file", fileElement.files[0]);
+    formData.append("course_url", course_url)
+    fetch("../certificate",{
+        body: formData,
+        method: "post"
+    }).then(response=>response.json())
+    .then(result=>{console.log(result)})
+}

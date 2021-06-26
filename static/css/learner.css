@@ -23,6 +23,13 @@
     border-radius: 5px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+#course-url{
+    margin-top: 5%;
+    margin-bottom: 5%;
 }
 
 .learner-tile-heading {
@@ -95,7 +102,7 @@
 
 .meter {
     width: 100%;
-    height: 8%;
+    height: 10%;
     position: relative;
     background: #555;
     border-radius: 25px;
