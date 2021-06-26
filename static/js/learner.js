@@ -11,6 +11,41 @@ document.getElementById("certificate-file-input").addEventListener('change', (ev
     document.getElementById("certificate-file-name-label").innerHTML = event.target.value.split("\\").pop();
 })
 
+// Actively Funding
+function loadActivelyFunding() {
+    var url_string = window.location.href;
+    var cur_url = new URL(url_string);
+    var username = cur_url.searchParams.get("username");
+    fetch(`http://localhost:8080/learner_details?username=${username}`)
+        .then(response => response.json())
+        .then(data => {
+            for (let i = 0; i < data.length; i++) {
+                let color = "red";
+                if (100 * data[i]["raisedAmount"]/data[i]["price"] > 80) {
+                    color = "green";
+                }
+                else if (100 * data[i]["raisedAmount"]/data[i]["price"] > 30) {
+                    color = "orange";
+                }
+                let entry = `
+                <div class="active-course-listing">
+                    <img src="${data[i]["courseImageURL"]}"/>
+                    <div class="course-info">
+                        <h3>${data[i]["name"]}</h3>
+                        <p>${data[i]["platform"]}</p>
+                        <div class="meter ${color} nostripes">
+                            <span style="width: ${100 * data[i]["raisedAmount"]/data[i]["price"]}%"></span>
+                        </div>
+                        $${(data[i]["raisedAmount"]/100).toFixed(2)} funded out of $${(data[i]["price"]/100).toFixed(2)} 
+                    </div>
+                </div>`;
+                document.getElementById("active-listing-section").insertAdjacentHTML("beforeend", entry);
+            }
+        })
+}
+
+loadActivelyFunding()
+
 // History
 function getDateString(daysBeforeToday) {
     const date = new Date(); // defaults to today
@@ -61,15 +96,15 @@ var myChart = new Chart(ctx, {
     }
 });
 
-function uploadCert(){
+function uploadCert() {
     let course_url = document.getElementById("course-url").value;
     let fileElement = document.getElementById("certificate-file-input");
     let formData = new FormData();
     formData.append("certificate_file", fileElement.files[0]);
     formData.append("course_url", course_url)
-    fetch("../certificate",{
+    fetch("../certificate", {
         body: formData,
         method: "post"
-    }).then(response=>response.json())
-    .then(result=>{console.log(result)})
+    }).then(response => response.json())
+        .then(result => { console.log(result) })
 }
