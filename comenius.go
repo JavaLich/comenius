@@ -8,8 +8,6 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    // fmt.Fprintf(w, "<p>Hi there, I love <b>%s</b>!</p>", r.URL.Path)
-
     t, err := template.ParseFiles("static/" + r.URL.Path[1:])
     if err != nil {
         fmt.Println(err)
@@ -23,7 +21,8 @@ func userHandler(w http.ResponseWriter, r *http.Request) {
 }
  
 func main() {
-    http.HandleFunc("/", handler)
-    // http.HandleFunc("/users/", userHandler)
+    fs := http.FileServer(http.Dir("./static"))
+    http.Handle("/", fs)
+    http.HandleFunc("/users/", userHandler)
     log.Fatal(http.ListenAndServe(":8080", nil))
 } 
