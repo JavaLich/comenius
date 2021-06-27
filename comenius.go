@@ -27,18 +27,11 @@ type LearnerDetails struct {
 }
 
 type ContributorDetails struct {
-<<<<<<< HEAD
 	CertificateList  []Certificate
 	ContributionList []Contribution
 	TotalMoneyRaised int64
 	TotalImpact      int64
 	PeopleImpacted   map[string]int64
-=======
-	ContributionList []Contribution
-	TotalMoneyRaised int64
-	TotalImpact int64
-	PeopleImpacted map[string]int64
->>>>>>> 713e369ec18ae9e4c74b3417d5228f78fde24049
 }
 
 type Certificate struct {
@@ -74,17 +67,10 @@ type CertificateRequest struct {
 }
 
 type DonateRequest struct {
-<<<<<<< HEAD
 	Amount    string `json:"amount"`
 	User      string `json:"user"`
 	Recipient string `json:"recipient"`
 	CertID    string `json:"certID"`
-=======
-    Amount string       `json:"amount"`
-    User   string      `json:"user"`
-    Recipient   string      `json:"recipient"`
-    CertID string       `json:"certID"`
->>>>>>> 713e369ec18ae9e4c74b3417d5228f78fde24049
 }
 
 type Contribution struct {
@@ -334,7 +320,6 @@ func getContributorDetails(w http.ResponseWriter, r *http.Request) {
 		Contribs = append(Contribs, Contrib)
 		totalMoneyRaised += dataMap["Amount"].(int64)
 	}
-<<<<<<< HEAD
 	var Certs []Certificate
 
 	// Finding user certificates/active listings
@@ -382,14 +367,6 @@ func getContributorDetails(w http.ResponseWriter, r *http.Request) {
 		PeopleImpacted:   peopleImpacted,
 	}
 
-=======
-	contributorDetails := ContributorDetails {
-		ContributionList: Contribs,
-		TotalMoneyRaised: totalMoneyRaised,
-		TotalImpact: int64(len(peopleImpacted)),
-		PeopleImpacted: peopleImpacted,
-	}
->>>>>>> 713e369ec18ae9e4c74b3417d5228f78fde24049
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(contributorDetails)
@@ -398,11 +375,7 @@ func getContributorDetails(w http.ResponseWriter, r *http.Request) {
 func main() {
 	port := os.Getenv("PORT")
 
-<<<<<<< HEAD
 	port = "8080" // uncomment for local testing
-=======
-	//port = "8080" // uncomment for local testing
->>>>>>> 713e369ec18ae9e4c74b3417d5228f78fde24049
 
 	r := mux.NewRouter()
 	r.HandleFunc("/learner_details", getLearnerDetails).Methods(http.MethodGet)
