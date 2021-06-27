@@ -77,6 +77,11 @@ select{
     font-size: 1.2em;
 }
 
+#total-impact {
+    font-size: 3em;
+    padding: 5%;
+}
+
 #amount-raised{
     font-size: 3em;
     padding: 5%;
