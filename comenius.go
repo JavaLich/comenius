@@ -170,7 +170,15 @@ func donate(w http.ResponseWriter, r *http.Request) {
 
     money, _ := strconv.ParseInt(request.Amount, 10, 64)
     
-    client.Collection("contribution").Add(context.Background(), &Contribution{Amount: money * 100, CertificateID: request.CertID, Date: time.Now(), Recipient: request.Recipient, TransactionNumber: ""})
+    client.Collection("contribution").Add(context.Background(), 
+        &Contribution {
+            Amount: money * 100, 
+            CertificateID: "certificate/yND8KwflMUbc78tR7Ri5", 
+            Date: time.Now(), 
+            Recipient: "JohnDoe2713", 
+            TransactionNumber: "",
+        },
+    )
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -286,18 +294,18 @@ func getContributorDetails(w http.ResponseWriter, r *http.Request) {
 		dataMap := docsnap.Data()
 
 		Contrib := Contribution{
-			Amount:            dataMap["amount"].(int64),
-			CertificateID:     dataMap["certificateID"].(string),
-			Date:              dataMap["date"].(time.Time),
-			Recipient:         dataMap["recipient"].(string),
-			TransactionNumber: dataMap["transactionNumber"].(string),
+			Amount:            dataMap["Amount"].(int64),
+			CertificateID:     dataMap["CertificateID"].(string),
+			Date:              dataMap["Date"].(time.Time),
+			Recipient:         dataMap["Recipient"].(string),
+			TransactionNumber: dataMap["TransactionNumber"].(string),
 		}
-		if _, ok := peopleImpacted[dataMap["recipient"].(string)]; ok {
-			peopleImpacted[dataMap["recipient"].(string)] = 0
+		if _, ok := peopleImpacted[dataMap["Recipient"].(string)]; ok {
+			peopleImpacted[dataMap["Recipient"].(string)] = 0
 		}
-		peopleImpacted[dataMap["recipient"].(string)] += dataMap["amount"].(int64)
+		peopleImpacted[dataMap["Recipient"].(string)] += dataMap["Amount"].(int64)
 		Contribs = append(Contribs, Contrib)
-		totalMoneyRaised += dataMap["amount"].(int64)
+		totalMoneyRaised += dataMap["Amount"].(int64)
 	}
 	contributorDetails := ContributorDetails {
 		ContributionList: Contribs,
