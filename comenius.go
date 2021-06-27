@@ -25,6 +25,13 @@ type LearnerDetails struct {
 	ContributionHistory        []int64
 }
 
+type ContributorDetails struct {
+	ContributionList []Contribution
+	TotalMoneyRaised int64
+	TotalImpact int64
+	PeopleImpacted map[string]int64
+}
+
 type Certificate struct {
 	CertificateURL string    `json:"certificateURL"`
 	CourseImageURL string    `json:"courseImageURL"`
@@ -65,11 +72,19 @@ type DonateRequest struct {
 }
 
 type Contribution struct {
+<<<<<<< HEAD
 	Amount        int64 
 	CertificateID string
 	Date          time.Time
     Recipient     string
     TransactionNumber string
+=======
+	Amount            int64
+	CertificateID     string
+	Date              time.Time
+	Recipient         string
+	TransactionNumber string
+>>>>>>> a30e3216592a9ce557658b23bc99eaf29041baee
 }
 
 var opt = option.WithCredentialsFile("./serviceAccountKey.json")
@@ -246,13 +261,69 @@ func getLearnerDetails(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(learnerDetails)
 }
 
+func getContributorDetails(w http.ResponseWriter, r *http.Request) {
+	var Contribs []Contribution
+
+	username := r.URL.Query().Get("username")
+
+	// Finding user certificates/active listings
+	iter := client.Collection("contributor").Documents(context.Background())
+
+	var contribList []interface{}
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Fprintf(w, "Error %v", err)
+		}
+		if username == doc.Data()["username"].(string) {
+			contribList = doc.Data()["contributionList"].([]interface{})
+			break
+		}
+	}
+
+	var totalMoneyRaised int64 = 0
+	peopleImpacted := make(map[string]int64)
+	for _, s := range contribList {
+		contributor_doc := client.Doc(s.(string))
+		docsnap, _ := contributor_doc.Get(context.Background())
+		dataMap := docsnap.Data()
+
+		Contrib := Contribution{
+			Amount:            dataMap["amount"].(int64),
+			CertificateID:     dataMap["certificateID"].(string),
+			Date:              dataMap["date"].(time.Time),
+			Recipient:         dataMap["recipient"].(string),
+			TransactionNumber: dataMap["transactionNumber"].(string),
+		}
+		if _, ok := peopleImpacted[dataMap["recipient"].(string)]; ok {
+			peopleImpacted[dataMap["recipient"].(string)] = 0
+		}
+		peopleImpacted[dataMap["recipient"].(string)] += dataMap["amount"].(int64)
+		Contribs = append(Contribs, Contrib)
+		totalMoneyRaised += dataMap["amount"].(int64)
+	}
+	contributorDetails := ContributorDetails {
+		ContributionList: Contribs,
+		TotalMoneyRaised: totalMoneyRaised,
+		TotalImpact: int64(len(peopleImpacted)),
+		PeopleImpacted: peopleImpacted,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(contributorDetails)
+}
+
 func main() {
 	port := os.Getenv("PORT")
 
-    port = "8080" // uncomment for local testing
+	port = "8080" // uncomment for local testing
 
 	r := mux.NewRouter()
 	r.HandleFunc("/learner_details", getLearnerDetails).Methods(http.MethodGet)
+	r.HandleFunc("/contributor_details", getContributorDetails).Methods(http.MethodGet)
 	r.HandleFunc("/login", loginPost).Methods(http.MethodPost)
 	r.HandleFunc("/login", loginGet).Methods(http.MethodGet)
 	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
