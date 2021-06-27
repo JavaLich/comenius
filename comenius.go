@@ -363,7 +363,7 @@ func getContributorDetails(w http.ResponseWriter, r *http.Request) {
 func main() {
 	port := os.Getenv("PORT")
 
-	port = "8080" // uncomment for local testing
+	//port = "8080" // uncomment for local testing
 
 	r := mux.NewRouter()
 	r.HandleFunc("/learner_details", getLearnerDetails).Methods(http.MethodGet)
