@@ -1,2 +1,4 @@
 comenius
 go.sum
+serviceAccountKey.json
+vendor/
