@@ -181,6 +181,17 @@ func donate(w http.ResponseWriter, r *http.Request) {
 		},
 	)
 
+    docsnap, _ := client.Collection("contributor").Doc("OeGjk5ea18jllboHwCw8").Get(context.Background())
+    data := docsnap.Data()
+    list := data["contributionList"].([]interface {})
+    a := "contribution/" + ref.ID
+    list = append(list, a)
+    data["contributionList"] = list
+    client.Collection("contributor").Doc("OeGjk5ea18jllboHwCw8").Set(context.Background(), data)
+    fmt.Println(list)
+
+    fmt.Println(ref.ID)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"submitted": true}`))
