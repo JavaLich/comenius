@@ -76,6 +76,7 @@ type Contribution struct {
 }
 
 var opt = option.WithCredentialsFile("./serviceAccountKey.json")
+var conf = &firebase.Config{}
 var app, _ = firebase.NewApp(context.Background(), nil, opt)
 var client, _ = app.Firestore(context.Background())
 
