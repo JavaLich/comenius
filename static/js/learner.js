@@ -11,7 +11,6 @@ document.getElementById("certificate-file-input").addEventListener('change', (ev
     document.getElementById("certificate-file-name-label").innerHTML = event.target.value.split("\\").pop();
 })
 
-// Actively Funding
 function loadLearnerDetails() {
     var url_string = window.location.href;
     let username = url_string.split("/").pop()
