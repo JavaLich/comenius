@@ -170,7 +170,7 @@ func donate(w http.ResponseWriter, r *http.Request) {
 
     money, _ := strconv.ParseInt(request.Amount, 10, 64)
     
-    client.Collection("contribution").Add(context.Background(), 
+    ref, _, _ := client.Collection("contribution").Add(context.Background(), 
         &Contribution {
             Amount: money * 100, 
             CertificateID: "certificate/yND8KwflMUbc78tR7Ri5", 
@@ -179,6 +179,17 @@ func donate(w http.ResponseWriter, r *http.Request) {
             TransactionNumber: "",
         },
     )
+
+    docsnap, _ := client.Collection("contributor").Doc("OeGjk5ea18jllboHwCw8").Get(context.Background())
+    data := docsnap.Data()
+    list := data["contributionList"].([]interface {})
+    a := "contribution/" + ref.ID
+    list = append(list, a)
+    data["contributionList"] = list
+    client.Collection("contributor").Doc("OeGjk5ea18jllboHwCw8").Set(context.Background(), data)
+    fmt.Println(list)
+
+    fmt.Println(ref.ID)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
