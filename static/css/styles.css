@@ -19,8 +19,9 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     /* margin:auto; */
     text-align: center;
+    padding: 10px;
     background-color: lightskyblue;
 }
