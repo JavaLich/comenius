@@ -60,7 +60,8 @@ function donate() {
     data = {
         "amount": amount,
         "user": user,
-        "certID": certID
+        "certID": certID, 
+        "recipient": recipientId
     }
     fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
