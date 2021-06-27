@@ -19,10 +19,10 @@ function loadLearnerDetails() {
         .then(response => response.json())
         .then(data => {
             // Weekly money raised
-            document.getElementById("weekly-contributions").innerText = "$" + (data["MoneyRaisedWeek"]/100).toFixed()
+            document.getElementById("weekly-contributions").innerText = "$" + (data["MoneyRaisedWeek"]/100).toFixed(2)
 
             // Total money raised
-            document.getElementById("total-contributions").innerText = "$" + (data["TotalContributionsReceived"]/100).toFixed()
+            document.getElementById("total-contributions").innerText = "$" + (data["TotalContributionsReceived"]/100).toFixed(2)
 
             // Contribution history
             setUpHistory(data["ContributionHistory"].reverse())
