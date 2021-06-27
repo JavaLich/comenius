@@ -72,19 +72,11 @@ type DonateRequest struct {
 }
 
 type Contribution struct {
-<<<<<<< HEAD
-	Amount        int64 
-	CertificateID string
-	Date          time.Time
-    Recipient     string
-    TransactionNumber string
-=======
 	Amount            int64
 	CertificateID     string
 	Date              time.Time
 	Recipient         string
 	TransactionNumber string
->>>>>>> a30e3216592a9ce557658b23bc99eaf29041baee
 }
 
 var opt = option.WithCredentialsFile("./serviceAccountKey.json")
