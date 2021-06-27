@@ -1,6 +1,7 @@
 package main
 
 import (
+    "strconv"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -64,9 +65,12 @@ type CertificateRequest struct {
 }
 
 type DonateRequest struct {
-	User   string
-	amount float32
+    Certificate string `json:"certificate"`
+    Bank   string      `json:"bank"`
+    Amount string       `json:"amount"`
+    User   string      `json:"user"`
 }
+
 type Contribution struct {
 	Amount            int64
 	CertificateID     string
@@ -156,25 +160,20 @@ func certificate(w http.ResponseWriter, r *http.Request) {
 }
 
 func donate(w http.ResponseWriter, r *http.Request) {
-	body := r.Body
-	buffer, err := io.ReadAll(body)
-
-	if err != nil {
-		fmt.Println("Request read error:")
-		fmt.Println(err)
-	}
+    decoder := json.NewDecoder(r.Body)
+    decoder.DisallowUnknownFields()
 
 	var request DonateRequest
-	json.Unmarshal(buffer, &request)
+    decoder.Decode(&request)
+
+    money, _ := strconv.ParseInt(request.Amount, 10, 64)
+    
+    client.Collection("contribution").Add(context.Background(), &Contribution{Amount: money, CertificateID: "", Date: time.Now(), Recipient: request.Certificate, TransactionNumber: ""})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"submitted": true}`))
 }
-
-// func queryLearner(user string) *Learner {
-//
-// }
 
 func getLearnerDetails(w http.ResponseWriter, r *http.Request) {
 	var Certs []Certificate
