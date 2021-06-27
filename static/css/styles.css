@@ -25,3 +25,15 @@ body {
     padding: 10px;
     background-color: lightskyblue;
 }
+
+#logo{
+    height: 100px;
+    width: 100px;
+}
+
+#cm{
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
