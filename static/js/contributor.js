@@ -4,6 +4,8 @@ function loadContributorDetails() {
     fetch(`/contributor_details?username=${username}`)
         .then(response => response.json())
         .then(data => {
+            // Donation options
+            
             // Donation history
             donationHistory = data["ContributionList"]
             for (let i = donationHistory.length - 1; i >= 0; i--) {

@@ -1,7 +1,6 @@
 package main
 
 import (
-    "strconv"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -10,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	firebase "firebase.google.com/go"
@@ -26,10 +26,11 @@ type LearnerDetails struct {
 }
 
 type ContributorDetails struct {
+	CertificateList  []Certificate
 	ContributionList []Contribution
 	TotalMoneyRaised int64
-	TotalImpact int64
-	PeopleImpacted map[string]int64
+	TotalImpact      int64
+	PeopleImpacted   map[string]int64
 }
 
 type Certificate struct {
@@ -65,10 +66,10 @@ type CertificateRequest struct {
 }
 
 type DonateRequest struct {
-    Amount string       `json:"amount"`
-    User   string      `json:"user"`
-    Recipient   string      `json:"recipient"`
-    CertID string       `json:"certID"`
+	Amount    string `json:"amount"`
+	User      string `json:"user"`
+	Recipient string `json:"recipient"`
+	CertID    string `json:"certID"`
 }
 
 type Contribution struct {
@@ -160,25 +161,25 @@ func certificate(w http.ResponseWriter, r *http.Request) {
 }
 
 func donate(w http.ResponseWriter, r *http.Request) {
-    decoder := json.NewDecoder(r.Body)
-    decoder.DisallowUnknownFields()
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
 
 	var request DonateRequest
-    decoder.Decode(&request)
+	decoder.Decode(&request)
 
-    fmt.Println(request);
+	fmt.Println(request)
 
-    money, _ := strconv.ParseInt(request.Amount, 10, 64)
-    
-    client.Collection("contribution").Add(context.Background(), 
-        &Contribution {
-            Amount: money * 100, 
-            CertificateID: "certificate/yND8KwflMUbc78tR7Ri5", 
-            Date: time.Now(), 
-            Recipient: "JohnDoe2713", 
-            TransactionNumber: "",
-        },
-    )
+	money, _ := strconv.ParseInt(request.Amount, 10, 64)
+
+	client.Collection("contribution").Add(context.Background(),
+		&Contribution{
+			Amount:            money * 100,
+			CertificateID:     "certificate/yND8KwflMUbc78tR7Ri5",
+			Date:              time.Now(),
+			Recipient:         "JohnDoe2713",
+			TransactionNumber: "",
+		},
+	)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -307,12 +308,53 @@ func getContributorDetails(w http.ResponseWriter, r *http.Request) {
 		Contribs = append(Contribs, Contrib)
 		totalMoneyRaised += dataMap["Amount"].(int64)
 	}
-	contributorDetails := ContributorDetails {
+	var Certs []Certificate
+
+	// Finding user certificates/active listings
+	learnerIter := client.Collection("learner").Documents(context.Background())
+
+	var certList []interface{}
+	for {
+		doc, err := learnerIter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Fprintf(w, "Error %v", err)
+		}
+		certList = append(certList, doc.Data()["certificateList"].([]interface{})...)
+	}
+
+	for _, s := range certList {
+		learner_doc := client.Doc(s.(string))
+		docsnap, _ := learner_doc.Get(context.Background())
+		dataMap := docsnap.Data()
+		course_doc := client.Doc(dataMap["courseID"].(string))
+		coursedocsnap, _ := course_doc.Get(context.Background())
+		courseDataMap := coursedocsnap.Data()
+
+		Cert := Certificate{
+			CertificateURL: dataMap["certificateURL"].(string),
+			CourseImageURL: courseDataMap["courseImageURL"].(string),
+			Name:           courseDataMap["name"].(string),
+			Platform:       courseDataMap["platform"].(string),
+			Price:          courseDataMap["price"].(int64),
+			URL:            courseDataMap["url"].(string),
+			Date:           dataMap["date"].(time.Time),
+			FullyFunded:    dataMap["fullyFunded"].(bool),
+			RaisedAmount:   dataMap["raisedAmount"].(int64),
+		}
+		Certs = append(Certs, Cert)
+	}
+
+	contributorDetails := ContributorDetails{
+		CertificateList:  Certs,
 		ContributionList: Contribs,
 		TotalMoneyRaised: totalMoneyRaised,
-		TotalImpact: int64(len(peopleImpacted)),
-		PeopleImpacted: peopleImpacted,
+		TotalImpact:      int64(len(peopleImpacted)),
+		PeopleImpacted:   peopleImpacted,
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(contributorDetails)
