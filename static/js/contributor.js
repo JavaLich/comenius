@@ -5,7 +5,11 @@ function loadContributorDetails() {
         .then(response => response.json())
         .then(data => {
             // Donation options
-            
+            let certificateList = data["CertificateList"]
+            for (let i = certificateList.length - 1; i >= 0; i--) {
+                let entry = `<option>JohnDoe2713 | ${certificateList[i]["name"]} | ${certificateList[i]["platform"]} | $${(certificateList[i]["price"]/100).toFixed(2)}`
+                document.getElementById("cert-select").insertAdjacentHTML("beforeend", entry)
+            }
             // Donation history
             donationHistory = data["ContributionList"]
             for (let i = donationHistory.length - 1; i >= 0; i--) {
