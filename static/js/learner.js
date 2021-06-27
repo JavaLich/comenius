@@ -12,31 +12,41 @@ document.getElementById("certificate-file-input").addEventListener('change', (ev
 })
 
 // Actively Funding
-function loadActivelyFunding() {
+function loadLearnerDetails() {
     var url_string = window.location.href;
     let username = url_string.split("/").pop()
     fetch(`/learner_details?username=${username}`)
         .then(response => response.json())
         .then(data => {
-            data = data["CertificateList"];
-            for (let i = 0; i < data.length; i++) {
+            // Weekly money raised
+            document.getElementById("weekly-contributions").innerText = "$" + (data["MoneyRaisedWeek"]/100).toFixed()
+
+            // Total money raised
+            document.getElementById("total-contributions").innerText = "$" + (data["TotalContributionsReceived"]/100).toFixed()
+
+            // Contribution history
+            setUpHistory(data["ContributionHistory"].reverse())
+
+            // Certificate data
+            certData = data["CertificateList"];
+            for (let i = 0; i < certData.length; i++) {
                 let color = "red";
-                if (100 * data[i]["raisedAmount"]/data[i]["price"] > 80) {
+                if (100 * certData[i]["raisedAmount"]/certData[i]["price"] > 80) {
                     color = "green";
                 }
-                else if (100 * data[i]["raisedAmount"]/data[i]["price"] > 30) {
+                else if (100 * certData[i]["raisedAmount"]/certData[i]["price"] > 30) {
                     color = "orange";
                 }
                 let entry = `
                 <div class="active-course-listing">
-                    <img src="${data[i]["courseImageURL"]}"/>
+                    <img src="${certData[i]["courseImageURL"]}"/>
                     <div class="course-info">
-                        <h3>${data[i]["name"]}</h3>
-                        <p>${data[i]["platform"]}</p>
+                        <h3>${certData[i]["name"]}</h3>
+                        <p>${certData[i]["platform"]}</p>
                         <div class="meter ${color} nostripes">
-                            <span style="width: ${100 * data[i]["raisedAmount"]/data[i]["price"]}%"></span>
+                            <span style="width: ${100 * certData[i]["raisedAmount"]/certData[i]["price"]}%"></span>
                         </div>
-                        $${(data[i]["raisedAmount"]/100).toFixed(2)} funded out of $${(data[i]["price"]/100).toFixed(2)} 
+                        $${(certData[i]["raisedAmount"]/100).toFixed(2)} funded out of $${(certData[i]["price"]/100).toFixed(2)} 
                     </div>
                 </div>`;
                 document.getElementById("active-listing-section").insertAdjacentHTML("beforeend", entry);
@@ -44,7 +54,7 @@ function loadActivelyFunding() {
         })
 }
 
-loadActivelyFunding()
+loadLearnerDetails()
 
 // History
 function getDateString(daysBeforeToday) {
@@ -53,48 +63,50 @@ function getDateString(daysBeforeToday) {
     return date.toDateString();
 }
 
-var labelList = [];
-for (var i = 7; i > 0; i--) {
-    labelList.push(getDateString(i));
-}
+function setUpHistory(data) {
+    var labelList = [];
+    for (var i = 7; i > 0; i--) {
+        labelList.push(getDateString(i));
+    }
 
-var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: labelList,
-        datasets: [{
-            label: 'Contributions Received ($)',
-            data: [12, 19, 3, 5, 2, 3, 6],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)',
-                'rgba(38, 158, 191, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)',
-                'rgba(38, 158, 191, 1)'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            y: {
-                beginAtZero: true
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labelList,
+            datasets: [{
+                label: 'Contributions Received ($)',
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(38, 158, 191, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(38, 158, 191, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
             }
         }
-    }
-});
+    });
+}
 
 function uploadCert() {
     let course_url = document.getElementById("course-url").value;
