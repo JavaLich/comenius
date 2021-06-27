@@ -47,6 +47,7 @@ function getCookie(name) {
 function donate() {
     let selectCert = document.getElementById("cert-select");
     let strCert = selectCert.options[selectCert.selectedIndex].text;
+    let certID = selectCert.options[selectCert.selectedIndex].cert_id;
 
     let selectBank = document.getElementById("bank-select");
     let strBank = selectBank.options[selectBank.selectedIndex].text;
@@ -61,6 +62,7 @@ function donate() {
         "bank": strBank,
         "amount": amount,
         "user": user,
+        "certID": certID
     }
     fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
