@@ -170,6 +170,8 @@ func getLearnerDetails(w http.ResponseWriter, r *http.Request) {
 	var Certs []Certificate
 
 	username := r.URL.Query().Get("username")
+
+	// Finding user certificates/active listings
 	iter := client.Collection("learner").Documents(context.Background())
 
 	var certList []interface{}
@@ -209,11 +211,32 @@ func getLearnerDetails(w http.ResponseWriter, r *http.Request) {
 		Certs = append(Certs, Cert)
 	}
 
+	// Calculating total contributions
+	contributionIter := client.Collection("contribution").Where("recipient", "==", username).Documents(context.Background())
+	var totalContributions int64 = 0
+	var weeklyContributions int64 = 0
+	contributionHistory := []int64{0, 0, 0, 0, 0, 0, 0}
+	for {
+		doc, err := contributionIter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Fprintf(w, "Error %v", err)
+		}
+		totalContributions += doc.Data()["amount"].(int64)
+		duration := time.Since(doc.Data()["date"].(time.Time))
+		if duration.Hours() <= 168 {
+			weeklyContributions += doc.Data()["amount"].(int64)
+			contributionHistory[int64(duration.Hours()/24)] += doc.Data()["amount"].(int64)
+		}
+	}
+
 	learnerDetails := LearnerDetails{
 		CertificateList:            Certs,
-		MoneyRaisedWeek:            200,
-		TotalContributionsReceived: 300,
-		ContributionHistory:        []int64{200, 300, 150, 200, 400, 300, 100},
+		MoneyRaisedWeek:            int64(weeklyContributions),
+		TotalContributionsReceived: int64(totalContributions),
+		ContributionHistory:        contributionHistory,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
