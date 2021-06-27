@@ -58,8 +58,6 @@ function donate() {
 
     let url = "../donate"
     data = {
-        "certificate": strCert,
-        "bank": strBank,
         "amount": amount,
         "user": user,
         "certID": certID

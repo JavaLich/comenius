@@ -65,10 +65,10 @@ type CertificateRequest struct {
 }
 
 type DonateRequest struct {
-    Certificate string `json:"certificate"`
-    Bank   string      `json:"bank"`
     Amount string       `json:"amount"`
     User   string      `json:"user"`
+    Recipient   string      `json:"recipient"`
+    CertID string       `json:"certID"`
 }
 
 type Contribution struct {
@@ -166,9 +166,11 @@ func donate(w http.ResponseWriter, r *http.Request) {
 	var request DonateRequest
     decoder.Decode(&request)
 
+    fmt.Println(request);
+
     money, _ := strconv.ParseInt(request.Amount, 10, 64)
     
-    client.Collection("contribution").Add(context.Background(), &Contribution{Amount: money, CertificateID: "", Date: time.Now(), Recipient: request.Certificate, TransactionNumber: ""})
+    client.Collection("contribution").Add(context.Background(), &Contribution{Amount: money * 100, CertificateID: request.CertID, Date: time.Now(), Recipient: request.Recipient, TransactionNumber: ""})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
