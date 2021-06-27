@@ -1,6 +1,7 @@
 package main
 
 import (
+    "strconv"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -11,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"firebase.google.com/go"
+	firebase "firebase.google.com/go"
 	"github.com/gorilla/mux"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -22,6 +23,13 @@ type LearnerDetails struct {
 	MoneyRaisedWeek            int64
 	TotalContributionsReceived int64
 	ContributionHistory        []int64
+}
+
+type ContributorDetails struct {
+	ContributionList []Contribution
+	TotalMoneyRaised int64
+	TotalImpact int64
+	PeopleImpacted map[string]int64
 }
 
 type Certificate struct {
@@ -57,16 +65,22 @@ type CertificateRequest struct {
 }
 
 type DonateRequest struct {
-	User   string
-	amount float32
+    Amount string       `json:"amount"`
+    User   string      `json:"user"`
+    Recipient   string      `json:"recipient"`
+    CertID string       `json:"certID"`
 }
+
 type Contribution struct {
-	amount        float32
-	certificateID string
-	date          string
+	Amount            int64
+	CertificateID     string
+	Date              time.Time
+	Recipient         string
+	TransactionNumber string
 }
 
 var opt = option.WithCredentialsFile("./serviceAccountKey.json")
+var conf = &firebase.Config{}
 var app, _ = firebase.NewApp(context.Background(), nil, opt)
 var client, _ = app.Firestore(context.Background())
 
@@ -81,7 +95,7 @@ func learner(w http.ResponseWriter, r *http.Request) {
 }
 
 func contributor(w http.ResponseWriter, r *http.Request) {
-    user := Contributor{FullName: r.URL.Path[len("/contributor/"):], Login: r.URL.Path[len("/contributor/"):]}
+	user := Contributor{FullName: r.URL.Path[len("/contributor/"):], Login: r.URL.Path[len("/contributor/"):]}
 	t, err := template.ParseFiles("static/contributor.html")
 	if err != nil {
 		fmt.Println(err)
@@ -146,25 +160,22 @@ func certificate(w http.ResponseWriter, r *http.Request) {
 }
 
 func donate(w http.ResponseWriter, r *http.Request) {
-	body := r.Body
-	buffer, err := io.ReadAll(body)
-
-	if err != nil {
-		fmt.Println("Request read error:")
-		fmt.Println(err)
-	}
+    decoder := json.NewDecoder(r.Body)
+    decoder.DisallowUnknownFields()
 
 	var request DonateRequest
-	json.Unmarshal(buffer, &request)
+    decoder.Decode(&request)
+
+    fmt.Println(request);
+
+    money, _ := strconv.ParseInt(request.Amount, 10, 64)
+    
+    client.Collection("contribution").Add(context.Background(), &Contribution{Amount: money * 100, CertificateID: request.CertID, Date: time.Now(), Recipient: request.Recipient, TransactionNumber: ""})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"submitted": true}`))
 }
-
-// func queryLearner(user string) *Learner {
-//
-// }
 
 func getLearnerDetails(w http.ResponseWriter, r *http.Request) {
 	var Certs []Certificate
@@ -244,13 +255,69 @@ func getLearnerDetails(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(learnerDetails)
 }
 
+func getContributorDetails(w http.ResponseWriter, r *http.Request) {
+	var Contribs []Contribution
+
+	username := r.URL.Query().Get("username")
+
+	// Finding user certificates/active listings
+	iter := client.Collection("contributor").Documents(context.Background())
+
+	var contribList []interface{}
+	for {
+		doc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Fprintf(w, "Error %v", err)
+		}
+		if username == doc.Data()["username"].(string) {
+			contribList = doc.Data()["contributionList"].([]interface{})
+			break
+		}
+	}
+
+	var totalMoneyRaised int64 = 0
+	peopleImpacted := make(map[string]int64)
+	for _, s := range contribList {
+		contributor_doc := client.Doc(s.(string))
+		docsnap, _ := contributor_doc.Get(context.Background())
+		dataMap := docsnap.Data()
+
+		Contrib := Contribution{
+			Amount:            dataMap["amount"].(int64),
+			CertificateID:     dataMap["certificateID"].(string),
+			Date:              dataMap["date"].(time.Time),
+			Recipient:         dataMap["recipient"].(string),
+			TransactionNumber: dataMap["transactionNumber"].(string),
+		}
+		if _, ok := peopleImpacted[dataMap["recipient"].(string)]; ok {
+			peopleImpacted[dataMap["recipient"].(string)] = 0
+		}
+		peopleImpacted[dataMap["recipient"].(string)] += dataMap["amount"].(int64)
+		Contribs = append(Contribs, Contrib)
+		totalMoneyRaised += dataMap["amount"].(int64)
+	}
+	contributorDetails := ContributorDetails {
+		ContributionList: Contribs,
+		TotalMoneyRaised: totalMoneyRaised,
+		TotalImpact: int64(len(peopleImpacted)),
+		PeopleImpacted: peopleImpacted,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(contributorDetails)
+}
+
 func main() {
 	port := os.Getenv("PORT")
 
-    // port = "8080" // uncomment for local testing
+	port = "8080" // uncomment for local testing
 
 	r := mux.NewRouter()
 	r.HandleFunc("/learner_details", getLearnerDetails).Methods(http.MethodGet)
+	r.HandleFunc("/contributor_details", getContributorDetails).Methods(http.MethodGet)
 	r.HandleFunc("/login", loginPost).Methods(http.MethodPost)
 	r.HandleFunc("/login", loginGet).Methods(http.MethodGet)
 	r.HandleFunc("/certificate", certificate).Methods(http.MethodPost)
