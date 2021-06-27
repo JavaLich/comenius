@@ -12,7 +12,7 @@ import (
 	"os"
 	"time"
 
-	"firebase.google.com/go"
+	firebase "firebase.google.com/go"
 	"github.com/gorilla/mux"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -73,6 +73,7 @@ type Contribution struct {
 }
 
 var opt = option.WithCredentialsFile("./serviceAccountKey.json")
+var conf = &firebase.Config{}
 var app, _ = firebase.NewApp(context.Background(), nil, opt)
 var client, _ = app.Firestore(context.Background())
 
@@ -87,7 +88,7 @@ func learner(w http.ResponseWriter, r *http.Request) {
 }
 
 func contributor(w http.ResponseWriter, r *http.Request) {
-    user := Contributor{FullName: r.URL.Path[len("/contributor/"):], Login: r.URL.Path[len("/contributor/"):]}
+	user := Contributor{FullName: r.URL.Path[len("/contributor/"):], Login: r.URL.Path[len("/contributor/"):]}
 	t, err := template.ParseFiles("static/contributor.html")
 	if err != nil {
 		fmt.Println(err)
